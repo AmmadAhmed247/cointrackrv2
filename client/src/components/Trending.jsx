@@ -19,8 +19,8 @@ const Trending = () => {
   if (isError) return <div className='text-red-500 text-center'>Error fetching data</div>;
   if (!Array.isArray(data)) return <div className='text-red-500 text-center'>No valid data found</div>;
   return (
-    <div className='h-full w-fit p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4'>
-      <Link to="/trending" className='text-zinc-900 font-semibold text-xl flex flex-row items-center'>
+    <div className='h-100 px-2 w-fit p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4'>
+      <Link to="/trending" className='text-zinc-900 font-semibold text-lg flex flex-row items-center'>
         Trending Coins
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -32,16 +32,16 @@ const Trending = () => {
         const isUp = sparkline.length > 1 && sparkline[sparkline.length - 1] > sparkline[0];
         const strokeColor = isUp ? '#16a34a' : '#dc2626'; 
         return (
-          <div key={coin.id} className="flex flex-row mt-4 gap-12 justify-between">
+          <div key={coin.id} className="flex flex-row mt-4   gap-2 justify-between">
             <div className="flex flex-row  items-center gap-3">
               <span className='text-zinc-900 font-semibold'>{index + 1}</span>
               <Customimage src={coin.image} w={32} h={32} />
               <div className="flex flex-col min-w-[120px]">
-                <span className='text-zinc-900 font-semibold'>{coin.name}</span>
+                <span className='text-zinc-900 w-fit  font-semibold'>{coin.name.split(" ")[0]}</span>
                 <span className='text-xs text-gray-600 uppercase'>{coin.symbol}</span>
               </div>
             </div>
-            <div className="flex flex-row  items-center gap-8">
+            <div className="flex flex-row  items-center gap-2">
               <span className='text-right font-semibold text-lg'>
                 ${coin.current_price?.toLocaleString() || 'N/A'}
               </span>

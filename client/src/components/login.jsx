@@ -24,7 +24,7 @@ export default function Login({ onClose }) {
             queryClient.invalidateQueries(["userinfo"])
             setloginerror("")
             onClose()
-            navigate("/")
+           
         },
         onError: (error) => {
             const msg = error.response?.data?.message || "Invalid credentials";

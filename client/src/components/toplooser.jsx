@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-const TopGainers = () => {
+const TopLooser = () => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["topgainers"],
+    queryKey: ["toplooser"],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND}/api/coins/topgainers`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND}/api/coins/toplooser`);
       return res.data.coins;
     },
     staleTime: 1000 * 60 * 5,
@@ -19,9 +19,9 @@ const TopGainers = () => {
   if (!Array.isArray(data)) return <div className='text-red-500 text-center'>No valid data found</div>;
 
   return (
-    <div className='h-100   px-2 pr-4 w-fit p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4'>
+    <div className='h-100 px-2 pr-4 w-fit p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4'>
       <Link to="/trending" className='text-zinc-900 font-semibold text-lg flex flex-row items-center'>
-        Top Gainers
+        Top Looser
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -54,4 +54,4 @@ const TopGainers = () => {
   );
 };
 
-export default TopGainers;
+export default TopLooser;

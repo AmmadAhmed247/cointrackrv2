@@ -48,6 +48,7 @@ export const getTrendingCoin = async (req, res) => {
 
     res.status(200).json({ coins: formattedCoins });
   } catch (error) {
+
     res.status(500).json({
       error: "Error while fetching trending coins from CoinPaprika",
       message: error.message,
@@ -57,56 +58,88 @@ export const getTrendingCoin = async (req, res) => {
 
 
 
-
-export const getTop5GainersBinance = async (req, res) => {
+export const getTop5LosersCoinPaprika = async (req, res) => {
   try {
-    const response = await axios.get('https://api.binance.com/api/v3/ticker/24hr');
+    const response = await axios.get('https://api.coinpaprika.com/v1/tickers');
 
-    const topGainers = response.data
-      .filter(coin => {
-        const volume = parseFloat(coin.quoteVolume);
-        const priceChange = parseFloat(coin.priceChangePercent);
+    const topLosers = response.data
+      .filter(coin => coin.quotes?.USD?.percent_change_24h < 0)
+      .sort((a, b) => a.quotes.USD.percent_change_24h - b.quotes.USD.percent_change_24h)
+      .slice(0, 5); 
 
-        return (
-          volume > 100000 &&
-          priceChange > 0 &&
-          coin.symbol.endsWith('USDT') &&
-          !coin.symbol.includes('UP') &&
-          !coin.symbol.includes('DOWN') &&
-          !coin.symbol.includes('BULL') &&
-          !coin.symbol.includes('BEAR')
-        );
-      })
-      .sort((a, b) => parseFloat(b.priceChangePercent) - parseFloat(a.priceChangePercent))
-      .slice(0, 5);
-
-    const formattedCoins = topGainers.map((coin, index) => ({
+    const formattedCoins = topLosers.map((coin, index) => ({
       rank: index + 1,
-      id: coin.symbol.toLowerCase().replace('usdt', ''),
-      name: coin.symbol.replace('USDT', ''),
+      id: coin.id,
+      name: coin.name,
       symbol: coin.symbol,
-      image: `https://assets.coincap.io/assets/icons/${coin.symbol.replace('USDT', '').toLowerCase()}@2x.png`,
-      current_price: parseFloat(coin.lastPrice),
-      price_change_percentage_24h: parseFloat(coin.priceChangePercent),
-      price_change_24h: parseFloat(coin.priceChange),
-
+      image: `https://static.coinpaprika.com/coin/${coin.id}/logo.png`,
+      current_price: coin.quotes.USD.price,
+      price_change_percentage_24h: coin.quotes.USD.percent_change_24h,
+      price_change_24h: coin.quotes.USD.price * (coin.quotes.USD.percent_change_24h / 100),
+      market_cap: coin.quotes.USD.market_cap,
+      volume_24h: coin.quotes.USD.volume_24h
     }));
 
     res.status(200).json({
       success: true,
       coins: formattedCoins,
       timestamp: new Date().toISOString(),
-      source: 'Binance'
+      source: 'CoinPaprika'
     });
-
   } catch (error) {
+    console.error('CoinPaprika Losers Error:', error.message);
     res.status(500).json({
       success: false,
-      error: "Error while fetching top 5 gainers from Binance",
-      message: error.message,
+      error: 'Error fetching top losers from CoinPaprika',
+      message: error.message
     });
   }
 };
+
+
+
+
+
+
+
+export const getTop5GainersCoinPaprika = async (req, res) => {
+  try {
+    const response = await axios.get('https://api.coinpaprika.com/v1/tickers');
+
+    const topGainers = response.data
+      .filter(coin => coin.quotes?.USD?.percent_change_24h > 0)
+      .sort((a, b) => b.quotes.USD.percent_change_24h - a.quotes.USD.percent_change_24h)
+      .slice(0, 5);
+
+    const formattedCoins = topGainers.map((coin, index) => ({
+      rank: index + 1,
+      id: coin.id,
+      name: coin.name,
+      symbol: coin.symbol,
+      image: `https://static.coinpaprika.com/coin/${coin.id}/logo.png`,
+      current_price: coin.quotes.USD.price,
+      price_change_percentage_24h: coin.quotes.USD.percent_change_24h,
+      price_change_24h: coin.quotes.USD.price * (coin.quotes.USD.percent_change_24h / 100),
+      market_cap: coin.quotes.USD.market_cap,
+      volume_24h: coin.quotes.USD.volume_24h
+    }));
+
+    res.status(200).json({
+      success: true,
+      coins: formattedCoins,
+      timestamp: new Date().toISOString(),
+      source: 'CoinPaprika'
+    });
+  } catch (error) {
+    console.error('CoinPaprika Gainers API Error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: 'Error fetching from CoinPaprika',
+      message: error.message
+    });
+  }
+};
+
 
 
 export const getDefiTopGainers = async (req, res) => {
@@ -243,8 +276,6 @@ export const getSinglePageData = async (req, res) => {
 
   }
 }
-
-
 
 
 export const getChartData = async (req, res) => {

@@ -25,10 +25,10 @@ const Defi = () => {
     return <div className="text-center text-red-500">Error fetching Defi Coins</div>;
 
   return (
-    <div className="w-full h-full p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4">
+    <div className="w-fit h-100 px-2 p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4">
       <Link
         to="/deficoins"
-        className="text-zinc-900 font-semibold text-xl flex flex-row items-center mb-4"
+        className="text-zinc-900 font-semibold text-lg flex flex-row items-center "
       >
         Defi Coins
         <svg
@@ -41,21 +41,18 @@ const Defi = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
         </svg>
       </Link  >
-
       {data?.map((coins, index) => (
         <div
           key={coins.id}
-          className="flex flex-row mb-5 items-center justify-between py-2"
+          className="flex flex-row mb-4 mt-4 items-center justify-between gap-8 py-1"
         >
-        
-          
-          <Link to={`/coins/${coins.id}`} className="flex flex-row items-center gap-3">
+          <Link to={`/coins/${coins.id}`} className="flex flex-row items-center gap-4">
             <Link to={`/coins/${coins.id}`} className="text-zinc-900 font-semibold w-6 text-center">{index + 1}</Link>
             <Customimage src={coins.image} w={32} h={32} className="flex-shrink-0" />
             <span className="text-zinc-900 font-semibold">{coins.symbol.toUpperCase()}</span>
           </Link>
 
-          <Link to={`/coins/${coins.id}`} className="flex flex-row items-center gap-4">
+          <Link to={`/coins/${coins.id}`} className="flex flex-row items-center gap-2">
             <span className="text-zinc-900 font-semibold text-lg text-right min-w-[100px]">
               ${coins.current_price?.toLocaleString()}
             </span>

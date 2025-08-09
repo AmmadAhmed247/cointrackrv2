@@ -18,7 +18,7 @@ const Dexscan = () => {
 if (isError) return <div>Error fetching DEX coins</div>
 
   return (
-    <div className='w-full h-full p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4 '>
+    <div className='w-fit h-100 px-2 p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4 '>
       <Link to="/dexcoins" className='text-zinc-900 font-semibold text-xl flex flex-row items-center' >Dex Coins <svg
         xmlns="http://www.w3.org/2000/svg"
         className="w-4 h-4 ml-2"
@@ -32,7 +32,7 @@ if (isError) return <div>Error fetching DEX coins</div>
       {data.map((coin,index)=>(
 
       
-       <div className="flex flex-row mt-4 gap-18 mb-6    justify-between">
+       <div className="flex flex-row mt-4 gap-8 mb-6 justify-between">
         <div className="flex flex-row  items-center gap-5">
           <span className='text-zinc-900 font-semibold' >{index+1}</span>
           <Customimage src={coin.logo} w={32} h={32} />
