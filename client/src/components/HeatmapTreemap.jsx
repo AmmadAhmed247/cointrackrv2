@@ -5,7 +5,7 @@ import RektSection from '../components/RektSection';
 import LiveList from '../components/LiveList';
 
 
-export default function HeatmapTreemap({
+export default function   HeatmapTreemap({
   apiBase = "http://localhost:3000",
   pollInterval = 1500,
   windowSec = 60,
@@ -19,7 +19,7 @@ export default function HeatmapTreemap({
     let mounted = true;
     const fetchOnce = async () => {
       try {
-        const res = await axios.get(`${apiBase}/api/liquidations?limit=1000`);
+        const res = await axios.get(`${apiBase}/api/liquidations?limit=50`);
         if (!mounted) return;
         setEvents(res.data || []);
         setLoading(false);
@@ -147,16 +147,16 @@ export default function HeatmapTreemap({
 
           rich: {
             nameStyle: {
-              fontSize: 20,
+              fontSize: 16,
 
               color: '#ffffff',
-              lineHeight: 29,
+              lineHeight: 39,
               padding: [6, 6, 2, 6],
             },
             valueStyle: {
               fontSize: 16,
-              fontWeight: '500',
-              color: '#d1d5db',
+              fontWeight: '200',
+              color: 'white',
               lineHeight: 16,
               padding: [0, 6, 6, 6],
             }
@@ -179,19 +179,20 @@ export default function HeatmapTreemap({
           Error: {error}
         </div>
       )}
-      <div className="flex flex-col justify-between h-140">
+      <div className="flex flex-row justify-between h-170">
         
-        <ReactECharts option={option} style={{ height: "100%", width: "100%" }} />
-     
-        
+        <ReactECharts option={option} style={{ height: "100%", width: "75%" }} />
+      
 
+         {/* <RektSection data={events} /> */}
 
+      
+            <LiveList limit={16} interval={1500} />
       </div>
        <div className="w-full flex flex-row gap-4 ">
           <div className="bg-zinc-900 flex flex-col rounded-md  text-white shadow-sm">
-            <LiveList limit={30} interval={1500} />
           </div>
-            <RektSection data={events} />
+           
            
         </div>
     </div>

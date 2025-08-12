@@ -8,8 +8,38 @@ const SmallFourFeatured = () => {
         { name: 'Feb', value: 100 },
         { name: 'Mar', value: 200 },
         { name: 'Apr', value: 900 },
+        { name: 'May', value: 1 },
+        { name: 'May', value: 1002 },
         { name: 'May', value: 100 },
         { name: 'May', value: 100 },
+        { name: 'May', value: 1 },
+        { name: 'May', value: 1002 },
+        { name: 'May', value: 10 },
+
+
+    ];
+    const data1 = [
+        { name: 'Jan', value: 100 },
+        { name: 'Jan', value: 110 },
+        { name: 'Jan', value: 120 },
+        { name: 'Jan', value: 130 },
+        { name: 'Jan', value: 100 },
+        { name: 'Jan', value: 140 },
+        { name: 'Jan', value: 170 },
+
+
+    ];
+    const data2 = [
+        { name: 'Jan', value: 100 },
+        { name: 'Jan', value: 110 },
+        { name: 'Jan', value: 120 },
+        { name: 'Jan', value: 130 },
+        { name: 'Jan', value: 100 },
+        { name: 'Jan', value: 140 },
+        { name: 'Jan', value: 170 },
+        { name: 'Jan', value: 10 },
+        { name: 'Jan', value: 120 },
+        { name: 'Jan', value: 190 },
 
 
     ];
@@ -32,8 +62,8 @@ const SmallFourFeatured = () => {
                                 </svg>
                             </Link>
                         </div>
-                        <span className='text-2xl font-semibold mt-2 w-full ' >669M</span>
-                        <Chart data={data} />
+                        <span className='text-2xl font-semibold mt-2 w-full ' >369M</span>
+                        <Chart isUp={true} data={data2} />
                     </div>
 
                 </div>
@@ -49,7 +79,7 @@ const SmallFourFeatured = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                         </svg></Link>
                         <div className="flex items-end text-3xl mb-3 font-bold">
-                            <span className="text-gray-900 ">41</span>
+                            <span className="text-gray-900 ">61</span>
                             <span className="text-gray-500  text-lg font-normal">/100</span>
                         </div>
                         <div className="hidden md:flex font-semibold justify-between">
@@ -88,16 +118,16 @@ const SmallFourFeatured = () => {
                         </div>
 
 
-                        <span className='text-2xl font-semibold mt-2 w-full ' >669M</span>
+                        <span className='text-2xl font-semibold mt-2 w-full ' >4.12T</span>
 
                         <Chart data={data} />
                     </div>
 
                 </div>
-                <div className="bg-white h-42 flex shadow-2xl  w-full rounded-2xl">
+                <div className="bg-white relative h-42 flex shadow-2xl  w-full rounded-2xl">
                     <div className="flex w-full flex-col p-4 relative">
                         <div className="flex flex-row items-center ">
-                            <Link to="/liquidation" className='text-xl whitespace-nowrap font-semibold ' >Market Cap </Link>
+                            <Link to="/liquidation" className='text-xl whitespace-nowrap font-semibold ' >Fear&Greed </Link>
                             <Link to="/liquidation"  >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -112,9 +142,9 @@ const SmallFourFeatured = () => {
                         </div>
 
 
-                        <span className='text-2xl font-semibold mt-2 w-full ' >669M</span>
-
-                        <Chart data={data} />
+                        <span className='text-2xl  font-semibold mt-2 w-full ' >70/<span className='text-zinc-600 text-xl'>100</span> </span>
+                        
+                        <Chart isUp={true} data={data1} />
                     </div>
 
                 </div>

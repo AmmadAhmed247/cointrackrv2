@@ -30,7 +30,7 @@ const TopLooser = () => {
       {data.map((coin, index) => {
       
         return (
-          <div key={coin.symbol} className="flex flex-row mt-4 gap-10 justify-between mb-4">
+          <div key={coin.symbol} className="flex flex-row mt-4 gap-10 justify-between mb-3.5">
             <div className="flex flex-row items-center gap-3">
               <span className='text-zinc-900 font-semibold'>{coin.rank}</span>
               <img src={coin.image} alt={coin.symbol} width={32} height={32} />

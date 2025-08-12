@@ -44,9 +44,9 @@ const Defi = () => {
       {data?.map((coins, index) => (
         <div
           key={coins.id}
-          className="flex flex-row mb-4 mt-4 items-center justify-between gap-8 py-1"
+          className="flex flex-row mb-3.5 mt-4 items-center justify-between gap-2 py-1"
         >
-          <Link to={`/coins/${coins.id}`} className="flex flex-row items-center gap-4">
+          <Link to={`/coins/${coins.id}`} className="flex flex-row items-center gap-2">
             <Link to={`/coins/${coins.id}`} className="text-zinc-900 font-semibold w-6 text-center">{index + 1}</Link>
             <Customimage src={coins.image} w={32} h={32} className="flex-shrink-0" />
             <span className="text-zinc-900 font-semibold">{coins.symbol.toUpperCase()}</span>

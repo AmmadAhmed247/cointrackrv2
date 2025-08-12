@@ -28,11 +28,11 @@ const RektSection = ({ data }) => {
     const cutoff = now - hours * 60 * 60 * 1000;
     
     return data.filter(item => {
-      // Try multiple possible timestamp fields
+   
       const ts = item.time ?? item.ts ?? item.timestamp ?? item.data?.updatedTime ?? item.data?.time ?? Date.now();
       const isRecent = ts >= cutoff;
       
-      if (hours === 1) { // Debug log for 1h filter
+      if (hours === 1) { 
         console.log(`Item timestamp: ${ts}, cutoff: ${cutoff}, isRecent: ${isRecent}`);
       }
       
@@ -46,7 +46,7 @@ const RektSection = ({ data }) => {
     console.log(`Processing ${filtered.length} filtered items`);
     
     for (const item of filtered) {
-      // Try multiple possible field locations
+      
       const price = parseFloat(
         item.price ?? 
         item.p ?? 
@@ -88,7 +88,7 @@ const RektSection = ({ data }) => {
   
   return (
     <div className="w-150  h-fit rounded-md  pr-4">
-      <h3 className="text-white text-lg mb-6 font-semibold">Total Liquidations</h3>
+      <h3 className="text-white text-2xl mb-5 font-semibold">Total Liquidations</h3>
       <div className="grid grid-cols-2 gap-2">
         {timeFrames.map(hours => {
           const filtered = filteredByHour(hours);
@@ -109,8 +109,7 @@ const RektSection = ({ data }) => {
               <div className="flex justify-between">
                 <span className="text-white text-sm">Short</span>
                 <span className="text-white text-sm">${formatNumber(stats.short)}</span>
-              </div>
-             
+              </div>   
             </div>
           );
         })}

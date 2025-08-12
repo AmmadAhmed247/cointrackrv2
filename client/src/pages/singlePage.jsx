@@ -3,7 +3,7 @@ import { ResponsiveContainer, LineChart, CartesianGrid, YAxis, Line } from "rech
 import { Link, useParams } from "react-router-dom"
 import Comment from "../components/comment.jsx"
 import CustomImage from "../components/customImage.jsx"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import axios from "axios"
 import { toast } from "react-toastify"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -25,14 +25,18 @@ function formatNumber(num) {
 }
 
 export default function SingleCoinPage() {
-  const [interval, setinterval] = useState("d1")
+  const [interval, setinterval] = useState("1d") // Fixed initial value
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [commentText, setCommentText] = useState("");
   const queryClient = useQueryClient();
   const { slug } = useParams()
+  const coinDataQueryKey = useMemo(() => ["singlepagedata", slug], [slug]);
+  const chartDataQueryKey = useMemo(() => ["chartdata", slug, interval], [slug, interval]);
+  const commentsQueryKey = useMemo(() => ["comments", slug], [slug]);
+  const sentimentQueryKey = useMemo(() => ["sentiment", slug], [slug]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["singlepagedata", slug],
+    queryKey: coinDataQueryKey,
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND}/api/coins/${slug}`)
       return res.data
@@ -40,10 +44,11 @@ export default function SingleCoinPage() {
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     retry: 1,
+    enabled: !!slug,
   })
 
   const { data: ChartData = [], isLoading: chartLoading, isError: chartError } = useQuery({
-    queryKey: ["chartdata", slug, interval],
+    queryKey: chartDataQueryKey,
     queryFn: async () => {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND}/api/coins/chart/${slug}`, {
         params: {
@@ -52,13 +57,17 @@ export default function SingleCoinPage() {
       })
       return response.data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, 
     refetchOnWindowFocus: false,
     retry: 1,
+    enabled: !!slug,
+
+    refetchOnMount: false,
+    refetchInterval: false,
   })
 
   const { data: comment = [], isLoading: commentLoading } = useQuery({
-    queryKey: ["comments", slug],
+    queryKey: commentsQueryKey,
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND}/api/comment/${slug}`);
       return res.data;
@@ -68,9 +77,8 @@ export default function SingleCoinPage() {
     refetchOnWindowFocus: false, 
   });
 
- 
   const { data: sentimentStats, isLoading: sentimentLoading, error: sentimentError } = useQuery({
-    queryKey: ["sentiment", slug],
+    queryKey: sentimentQueryKey,
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND}/api/sentiment/${slug}`)
       return res.data
@@ -87,9 +95,14 @@ export default function SingleCoinPage() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["comments", slug])
+     
+      queryClient.invalidateQueries({ queryKey: commentsQueryKey })
       setCommentText("")
       setShowCommentBox(false)
+      toast.success("Comment posted successfully!")
+    },
+    onError: (error) => {
+      toast.error("Failed to post comment: " + (error.response?.data?.message || error.message))
     }
   })
 
@@ -99,7 +112,9 @@ export default function SingleCoinPage() {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['sentiment', slug]);
+      
+      queryClient.invalidateQueries({ queryKey: sentimentQueryKey });
+      toast.success("Vote recorded successfully!")
     },
     onError: (error) => {
       toast.error("Login Required " || error.message)
@@ -112,6 +127,12 @@ export default function SingleCoinPage() {
       return;
     }
     sentimentMutation.mutate(sentiment);
+  };
+
+  const handleIntervalChange = (newInterval) => {
+    if (newInterval !== interval && !chartLoading) {
+      setinterval(newInterval);
+    }
   };
 
   const [activeTab, setActiveTab] = useState("Overview")
@@ -138,7 +159,7 @@ export default function SingleCoinPage() {
           <div className="flex mt-4">
             <h6 className="flex items-center gap-5 text-black text-4xl font-semibold">
               ${data.current_price?.toLocaleString?.() || " loading.."}
-              <span className={`text-sm text-green-400 ${data.price_change_percentage_24h > 0 ? "text-green-500" : "text-red-500"} `}>({data.price_change_percentage_24h.toFixed(2)}%)</span>
+              <span className={`text-lg text-green-400 ${data.price_change_percentage_24h > 0 ? "text-green-200" : "text-red-500"} `}>({data.price_change_percentage_24h.toFixed(2)}%)</span>
             </h6>
           </div>
         </div>
@@ -158,7 +179,7 @@ export default function SingleCoinPage() {
         <div className="flex gap-2 mt-2 h-20">
           <div className="flex-1/2 border-1 border-zinc-100 rounded-md pt-4">
             <h6 className='text-zinc-600 text-sm flex items-center justify-center gap-2'>Volume (24h) <FaInfoCircle /></h6>
-            <h6 className='text-zinc-700 text-center'>{formatNumber(data.total_volume)} <span className='text-sm text-green-500'>(3.12%)</span></h6>
+            <h6 className='text-zinc-700 text-center'>{formatNumber(data.total_volume)} <span className='text-sm font-semibold text-green-400'>(3.12%)</span></h6>
           </div>
           <div className="flex-1/2 border-1 border-zinc-100 rounded-md pt-4">
             <h6 className='text-zinc-600 text-sm flex items-center justify-center gap-2'>Vol/Mkt Cap <FaInfoCircle /></h6>
@@ -198,7 +219,7 @@ export default function SingleCoinPage() {
 
         <div className="border-zinc-100 border-1 rounded-xl border-t-4 px-2 py-3 flex justify-between">
           <div>
-            <h4 className='text-black text-right text-sm'>All-time low</h4>
+            <h4 className='text-black text-sm'>All-time low</h4>
             <span className='text-xs text-right text-black'>{data.atl_date}</span>
           </div>
           <div>
@@ -228,15 +249,20 @@ export default function SingleCoinPage() {
           </div>
           <div className="flex gap-2 mt-2">
             {[
-              { label: "1m", value: "m1" },
-              { label: "5m", value: "m5" },
-              { label: "1d", value: "d1" },
-              { label: "1w", value: "w1" }
+              { label: "1m", value: "1m" },
+              { label: "5m", value: "5m" },
+              { label: "15m", value: "15m" },
+              { label: "30m", value: "30m" },
+              { label: "1h", value: "1h" },
+              { label: "1d", value: "1d" },
             ].map(({ label, value }, idx) => (
               <button
                 key={idx}
-                onClick={() => setinterval(value)}
-                className="bg-zinc-100 active:scale-105 transition-all text-black text-sm rounded-2xl px-3 h-8"
+                onClick={() => handleIntervalChange(value)}
+                disabled={chartLoading}
+                className={`bg-zinc-100 active:scale-105 transition-all text-black text-sm rounded-2xl px-3 h-8 ${
+                  interval === value ? 'bg-blue-100 border border-blue-300' : ''
+                } ${chartLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {label}
               </button>
@@ -245,13 +271,23 @@ export default function SingleCoinPage() {
         </div>
 
         <div className="h-120 mt-10">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={ChartData}>
-              <CartesianGrid stroke="#e5e7eb" strokeDasharray="2" vertical={false} />
-              <YAxis tick={{ fill: 'black', fontSize: 12 }} domain={['dataMin - 10', 'dataMax + 10']} orientation="right" />
-              <Line type="monotone" dataKey="y" stroke="#4ade80" strokeWidth={3} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
+          {chartLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-500">Loading chart data...</div>
+            </div>
+          ) : chartError ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-red-500">Error loading chart data</div>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={ChartData} key={`${slug}-${interval}`}>
+                <CartesianGrid stroke="#e5e7eb" strokeDasharray="2" vertical={false} />
+                <YAxis tick={{ fill: 'black', fontSize: 12 }} domain={['dataMin - 10', 'dataMax + 10']} orientation="right" />
+                <Line type="monotone" dataKey="y" stroke="#4ade80" strokeWidth={3} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
@@ -269,8 +305,8 @@ export default function SingleCoinPage() {
             </div>
           </div>
           <div className="flex gap-4 mt-2">
-            <button onClick={() => handleVote("bullish")} disabled={sentimentMutation.isLoading} className='text-green-500 px-2 py-1 border active:scale-105 transition-all border-green-500 rounded-xl flex-1'>{sentimentMutation.isLoading ? 'Voting...' : 'Bullish'}</button>
-            <button onClick={() => handleVote("bearish")} disabled={sentimentMutation.isLoading} className='text-red-500 px-2 py-1 border active:scale-105 transition-all border-red-500 rounded-xl flex-1'>{sentimentMutation.isLoading ? 'Voting...' : 'Bearish'}</button>
+            <button onClick={() => handleVote("bullish")} disabled={sentimentMutation.isLoading} className='text-green-500 px-2 py-1 border active:scale-105 transition-all border-green-500 rounded-xl flex-1 disabled:opacity-50'>{sentimentMutation.isLoading ? 'Voting...' : 'Bullish'}</button>
+            <button onClick={() => handleVote("bearish")} disabled={sentimentMutation.isLoading} className='text-red-500 px-2 py-1 border active:scale-105 transition-all border-red-500 rounded-xl flex-1 disabled:opacity-50'>{sentimentMutation.isLoading ? 'Voting...' : 'Bearish'}</button>
           </div>
         </div>
 
@@ -308,7 +344,7 @@ export default function SingleCoinPage() {
                 />
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white text-xs px-4 py-1 rounded-lg self-end"
+                  className="bg-blue-600 text-white text-xs px-4 py-1 rounded-lg self-end disabled:opacity-50"
                   disabled={commentMutation.isLoading}
                 >
                   {commentMutation.isLoading ? "Posting..." : "Post"}

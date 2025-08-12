@@ -6,7 +6,7 @@ const Liquidation = () => {
   const options = ["1 hour", "4 hour", "12 hour", "24 hour"];
   const windowMap = { "1 hour": 3600, "4 hour": 14400, "12 hour": 43200, "24 hour": 86400 };
   return (
-    <div className="flex flex-col px-80 bg-zinc-900 min-h-screen text-white">
+    <div className="flex flex-col  bg-zinc-900 min-h-screen text-white">
       <div className="flex justify-between gap-5 border-b border-gray-700 py-3 px-2">
         <div className="flex items-center gap-4">
           <h4 className='font-bold text-2xl'>Liquidation Heatmap</h4>

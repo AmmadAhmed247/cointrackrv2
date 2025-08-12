@@ -19,7 +19,7 @@ const TopGainers = () => {
   if (!Array.isArray(data)) return <div className='text-red-500 text-center'>No valid data found</div>;
 
   return (
-    <div className='h-100   px-2 pr-4 w-fit p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4'>
+    <div className='h-100 px-2 pr-4 w-fit p-4 ml-4 rounded-2xl flex flex-col shadow-2xl mt-4'>
       <Link to="/trending" className='text-zinc-900 font-semibold text-lg flex flex-row items-center'>
         Top Gainers
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,8 +30,8 @@ const TopGainers = () => {
       {data.map((coin, index) => {
       
         return (
-          <div key={coin.symbol} className="flex flex-row mt-4 gap-10 justify-between mb-4">
-            <div className="flex flex-row items-center gap-3">
+          <div key={coin.symbol} className="flex flex-row mt-4 mb-3.5 gap-8 justify-between ">
+            <div className="flex flex-row items-center  gap-3">
               <span className='text-zinc-900 font-semibold'>{coin.rank}</span>
               <img src={coin.image} alt={coin.symbol} width={32} height={32} />
               <div className="flex flex-col min-w-[100px]">

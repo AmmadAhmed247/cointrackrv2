@@ -32,7 +32,7 @@ if (isError) return <div>Error fetching DEX coins</div>
       {data.map((coin,index)=>(
 
       
-       <div className="flex flex-row mt-4 gap-8 mb-6 justify-between">
+       <div className="flex flex-row mt-4 gap-8 mb-5.5 justify-between">
         <div className="flex flex-row  items-center gap-5">
           <span className='text-zinc-900 font-semibold' >{index+1}</span>
           <Customimage src={coin.logo} w={32} h={32} />

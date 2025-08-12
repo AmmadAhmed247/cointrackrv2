@@ -277,31 +277,83 @@ export const getSinglePageData = async (req, res) => {
   }
 }
 
+const coinMap = {
+  bitcoin: "BTCUSDT",
+  ethereum: "ETHUSDT",
+  tether: "USDTUSDT", // Usually you don’t chart stablecoin→USDT pairs
+  binancecoin: "BNBUSDT",
+  solana: "SOLUSDT",
+  xrp: "XRPUSDT",
+  cardano: "ADAUSDT",
+  dogecoin: "DOGEUSDT",
+  tron: "TRXUSDT",
+  polkadot: "DOTUSDT",
+  polygon: "MATICUSDT",
+  litecoin: "LTCUSDT",
+  shiba_inu: "SHIBUSDT",
+  avalanche: "AVAXUSDT",
+  dai: "DAIUSDT", // stable, same as tether note
+  uniswap: "UNIUSDT",
+  chainlink: "LINKUSDT",
+  cosmos: "ATOMUSDT",
+  stellar: "XLMUSDT",
+  monero: "XMRUSDT",
+  okb: "OKBUSDT",
+  ethereum_classic: "ETCUSDT",
+  filecoin: "FILUSDT",
+  aptos: "APTUSDT",
+  internet_computer: "ICPUSDT",
+  lido_dao: "LDOUSDT",
+  toncoin: "TONUSDT",
+  arbitrum: "ARBUSDT",
+  vechain: "VETUSDT",
+  maker: "MKRUSDT",
+  near_protocol: "NEARUSDT",
+  optimism: "OPUSDT",
+};
+
 
 export const getChartData = async (req, res) => {
-  const coinId = req.params.coinId.toLowerCase()
-  const interval = req.query.interval || 'd1'
+  const coinId = req.params.coinId.toLowerCase();
+  const symbol = coinMap[coinId] || coinId.toUpperCase() + "USDT";
+
+  const intervalMap = {
+    "1m": "1m",
+    "5m": "5m", 
+    "15m": "15m",
+    "30m": "30m",
+    "1h": "1h",
+    "4h": "4h", 
+    "1d": "1d",
+  };
+
+  const interval = intervalMap[req.query.interval] || "1d";
+
   try {
-    const response = await axios.get(`https://rest.coincap.io/v3/assets/${coinId}/history`, {
+    const response = await axios.get("https://api.binance.com/api/v3/klines", {
       params: {
-        interval
+        symbol,
+        interval,
+        limit: 100,
       },
-      headers: {
-        Authorization: `Bearer ${process.env.COIN_CAP}`
-      }
-    })
-    const rawData = response.data.data
-    const formatData = rawData.map(item => ({
-      x: item.date.split('T')[0],
-      y: parseFloat(item.priceUsd),
-    }))
-    res.json(formatData)
+    });
+
+    const formatData = response.data.map(candle => ({
+      x: candle[0], // timestamp
+      y: parseFloat(candle[4]), // close price
+    }));
+
+    res.json(formatData);
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: "Error while fetching Chart Data", error: error.message })
-
+    res.status(500).json({
+      message: "Error while fetching Chart Data from Binance",
+      error: error.message,
+    });
   }
-}
+};
+
+
 
 export const addToWatchList = async (req, res) => {
   const { userId, coinSymbol } = req.body
